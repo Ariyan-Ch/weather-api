@@ -1,11 +1,13 @@
 ﻿const express = require('express');
 const axios = require('axios');
 const router = express.Router();
+require('dotenv').config(); // for getting env var api_key
+
 
 // Example route to get weather by city
 router.get('/:city', async (req, res) => {
     const city = req.params.city;
-    const apiKey = '1320dcf4cbb35478c2564cbc6edbb7de';
+    const apiKey = process.env.API_KEY;
 
     try {
         const response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
