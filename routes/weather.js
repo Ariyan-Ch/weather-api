@@ -1,13 +1,32 @@
 ﻿const express = require('express');
+
+const mongoose = require('mongoose');
+const CityLogs = require('../schemas/cityNameLog.js')
+
 const axios = require('axios');
 const router = express.Router();
 require('dotenv').config(); // for getting env var api_key
 
+//connecting with the remote atlas
+const DB = process.env.DB_CONN.replace('<PASSWORD>', process.env.DB_PASS);
+mongoose.connect(DB).then( () => {
+    console.log("Connection with Atlas Established Successfully!");
+}).catch(() =>{
+    console.log("Error Encountered at connecting with mongoose!");
+});
 
-// Example route to get weather by city
+// route to get weather by city
 router.get('/:city', async (req, res) => {
     const city = req.params.city;
     const apiKey = process.env.API_KEY;
+
+    //log the city name with the current time stamp
+    const newLog = new CityLogs({City:city})
+    newLog.save().then( () => {
+        console.log("Logged the City Name");
+    }).catch((err) => {
+        console.log("Error while Logging the city name:", err );
+    })
 
     try {
         const response = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
