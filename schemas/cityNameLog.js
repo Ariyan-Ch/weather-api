@@ -16,5 +16,5 @@ const CityLog = new mongoose.Schema({
     Date:{type:Date,default:Date.now}
 })
 
-const collectionName = 'CityLogs'
+const collectionName = 'CityNameLogs'
 module.exports = mongoose.model(collectionName, CityLog);
