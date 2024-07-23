@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config(); // for getting env var api_key
 
 
-// Middleware to verify JWT
+// Middleware to verify JWT from header
 const verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
     if (!token) return res.status(401).json({ error: 'Access denied' });
@@ -14,14 +14,29 @@ const verifyToken = (req, res, next) => {
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         req.user = verified;
+
         next();
     } catch (error) {
         res.status(400).json({ error: 'Invalid token' });
     }
 };
 
+//middleware to verify jwt using cookies instead
+const authenticateTokenFromCookie = (req, res, next) => {
+
+    const token = req.cookies.token;
+    if (!token) return res.status(401).send("No token cookie found. Please signin first."); // If no token, unauthorized
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).send("Token is invalid. Please sign in appropriately."); // If token is invalid, forbidden
+        req.user = user;
+        next();
+    });
+
+};
+
 // route to get weather by city
-router.use('/:city',verifyToken ,async (req, res) => {
+router.use('/:city',authenticateTokenFromCookie ,async (req, res) => {
     const city = req.params.city;
     const apiKey = process.env.API_KEY;
 

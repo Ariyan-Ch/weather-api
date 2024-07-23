@@ -6,6 +6,7 @@ const extraRoutes = require('./routes/extras');
 const signupRoutes = require('./routes/signup.js');
 const signinRoutes = require('./routes/signin');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 
 //connecting with the remote atlas
@@ -16,14 +17,15 @@ mongoose.connect(process.env.DB_LOCAL).then( () => {
     console.log("Error Encountered at connecting with Database!");
 });
 
-// Middleware to parse JSON requests, don't need it since the get request has no body, only the url, which doesn't need to be parsed.
+// Middleware to parse JSON requests and get cookies from the client side
 app.use(express.json());
+app.use(cookieParser());
 
 //post request to signup page
-app.post('/signup', signupRoutes);
+app.use('/signup', signupRoutes);
 
 //post request to signin page
-app.post('/signin', signinRoutes);
+app.use('/signin', signinRoutes);
 
 // Use the weather routes
 app.use('/api/weather', weatherRoutes);

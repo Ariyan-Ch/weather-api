@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const UserCred = require('../schemas/userCred.js');
+const path = require('path');
+
+
+router.get('/', async (req,res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'signUP.html'));
+});
+
 
 router.post('*', async (req, res) => {
     try{
@@ -12,10 +19,10 @@ router.post('*', async (req, res) => {
         })
         newUser.save().then( () => {
             console.log("Saved User Credentials.");
-            res.send("Successful!");
+            res.json({"message":"Successful!"});
         }).catch((err) => {
             console.log("Error while Saving Credentials: ", err );
-            res.send("Failed!");
+            res.json({"message":"Failed!"});
         });
 
     } catch (err){
